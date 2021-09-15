@@ -6,12 +6,13 @@ import android.os.Bundle;
 // import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 public class SecondActivity extends Activity {
+    TextView E_Name, E_Lastname, E_Age, E_Address;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
-        TextView E_Name, E_Lastname, E_Age, E_Address;
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_second);
 
@@ -32,6 +33,16 @@ public class SecondActivity extends Activity {
         E_Name.setText( String.format( "%s: %s", E_Name.getText() , fullname ) );
         E_Lastname.setText( String.format( "%s: %s", E_Lastname.getText() , lastname ) );
         E_Age.setText( String.format( "%s: %s", E_Age.getText() , age ) );
-        E_Address.setText( String.format( "%s: %s", E_Address.getText() , fullname ) );
+        E_Address.setText( String.format( "%s: %s", E_Address.getText() , address ) );
+    }
+
+    @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        System.out.println("Save!!");
+        outState.putString("eName", E_Name.getText().toString());
+        outState.putString("eLastName", E_Lastname.getText().toString());
+        outState.putString("eAge", E_Age.getText().toString());
+        outState.putString("eAddress", E_Address.getText().toString());
     }
 }
