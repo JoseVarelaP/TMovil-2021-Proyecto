@@ -46,7 +46,7 @@ public class MainActivity extends Activity {
     @Override
     protected void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-        System.out.println("Restore!!");
+        System.out.println("Save!!");
         outState.putString("eName", E_Name.getText().toString());
         outState.putString("eLastName", E_Lastname.getText().toString());
         outState.putString("eAge", E_Age.getText().toString());
@@ -56,16 +56,17 @@ public class MainActivity extends Activity {
     @Override
     protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
+        System.out.println("Restore!!");
         String name = savedInstanceState.getString("eName");
         E_Name.setText(name);
 
         String lastName = savedInstanceState.getString("eLastName");
-        E_Name.setText(lastName);
+        E_Lastname.setText(lastName);
 
         String age = savedInstanceState.getString("eAge");
-        E_Name.setText(age);
+        E_Age.setText(age);
 
         String address = savedInstanceState.getString("eAddress");
-        E_Name.setText(address);
+        E_Address.setText(address);
     }
 }

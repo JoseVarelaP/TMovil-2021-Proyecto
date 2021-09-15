@@ -41,6 +41,13 @@
             android:id="@+id/E_Age"
             />
 
+        <Button
+            android:id="@+id/MoveActivityButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/E_Age"
+            android:text="return" />
+
 
     </RelativeLayout>
 
