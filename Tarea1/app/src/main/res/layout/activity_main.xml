@@ -34,8 +34,8 @@
         android:id="@+id/E_Name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_toEndOf="@+id/Name"
         android:layout_alignBaseline="@id/Name"
+        android:layout_toEndOf="@+id/Name"
         android:hint="@string/name"
         android:inputType="text"
         android:textSize="15sp" />
@@ -99,6 +99,13 @@
         android:hint="@string/address"
         android:inputType="text"
         android:textSize="15sp" />
+
+    <Button
+        android:id="@+id/MoveActivityButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/Address"
+        android:text="@string/submit" />
 
 </RelativeLayout>
 

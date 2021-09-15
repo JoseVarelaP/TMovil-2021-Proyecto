@@ -18,6 +18,10 @@
             </intent-filter>
         </activity>
 
+        <activity android:name=".SecondActivity"
+            android:exported="true" android:screenOrientation="sensor">
+        </activity>
+
     </application>
 
 

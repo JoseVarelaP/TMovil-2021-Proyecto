@@ -1,9 +1,11 @@
 package com.example.tarea1;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -14,7 +16,6 @@ public class MainActivity extends Activity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_main);
 
 
@@ -24,11 +25,21 @@ public class MainActivity extends Activity {
         E_Address = findViewById(R.id.E_Address);
 
         ImageView Image = findViewById(R.id.Image);
-    }
 
+        // Crea una acción para el boton.
+        Button btnInformacion = findViewById(R.id.MoveActivityButton);
+        btnInformacion.setOnClickListener( view -> {
+            Intent intent = new Intent( getBaseContext(), SecondActivity.class );
+            Intent.putExtra( Name, E_Name.getText().toString() );
+            Intent.putExtra( LASTNAME, E_Name.getText().toString() );
+            Intent.putExtra( AGE, E_Name.getText().toString() );
+            Intent.putExtra( ADRESS, E_Name.getText().toString() );
+        } );
+    }
     @Override
     protected void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
+        System.out.println("Restore!!");
         outState.putString("eName", E_Name.getText().toString());
         outState.putString("eLastName", E_Lastname.getText().toString());
         outState.putString("eAge", E_Age.getText().toString());
