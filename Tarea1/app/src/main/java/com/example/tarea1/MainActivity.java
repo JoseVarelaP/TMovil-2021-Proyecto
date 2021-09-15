@@ -42,6 +42,20 @@ public class MainActivity extends Activity {
 
             startActivity(intent);
         } );
+
+        // Extrae la información del intento
+        Intent intent = getIntent();
+        if (intent == null) return;
+
+        String fullname = intent.getStringExtra( MainActivity.eName );
+        String lastname = intent.getStringExtra( MainActivity.eLastName );
+        String age = intent.getStringExtra( MainActivity.eAge );
+        String address = intent.getStringExtra( MainActivity.eAddress );
+
+        E_Name.setText( fullname );
+        E_Lastname.setText( lastname );
+        E_Age.setText( age );
+        E_Address.setText( address );
     }
     @Override
     protected void onSaveInstanceState(@NonNull Bundle outState) {

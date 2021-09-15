@@ -35,7 +35,7 @@ public class SecondActivity extends Activity {
             intent.putExtra( eAge, E_Age.getText().toString() );
             intent.putExtra( eAddress, E_Address.getText().toString() );
 
-            finish();
+            startActivity(intent);
         } );
 
         // Extrae la información del intento
@@ -47,10 +47,10 @@ public class SecondActivity extends Activity {
         String age = intent.getStringExtra( MainActivity.eAge );
         String address = intent.getStringExtra( MainActivity.eAddress );
 
-        E_Name.setText( String.format( "%s: %s", E_Name.getText() , fullname ) );
-        E_Lastname.setText( String.format( "%s: %s", E_Lastname.getText() , lastname ) );
-        E_Age.setText( String.format( "%s: %s", E_Age.getText() , age ) );
-        E_Address.setText( String.format( "%s: %s", E_Address.getText() , address ) );
+        E_Name.setText( fullname );
+        E_Lastname.setText( lastname );
+        E_Age.setText( age );
+        E_Address.setText( address );
     }
 
     @Override
