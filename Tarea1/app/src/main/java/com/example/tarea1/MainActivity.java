@@ -12,6 +12,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 public class MainActivity extends Activity {
+    public static String eName = "name";
+    public static String eLastName = "lastName";
+    public static String eAge = "age";
+    public static String eAddress = "address";
+
     EditText E_Name, E_Lastname, E_Age, E_Address;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -30,10 +35,12 @@ public class MainActivity extends Activity {
         Button btnInformacion = findViewById(R.id.MoveActivityButton);
         btnInformacion.setOnClickListener( view -> {
             Intent intent = new Intent( getBaseContext(), SecondActivity.class );
-            Intent.putExtra( Name, E_Name.getText().toString() );
-            Intent.putExtra( LASTNAME, E_Name.getText().toString() );
-            Intent.putExtra( AGE, E_Name.getText().toString() );
-            Intent.putExtra( ADRESS, E_Name.getText().toString() );
+            intent.putExtra( eName, E_Name.getText().toString() );
+            intent.putExtra( eLastName, E_Lastname.getText().toString() );
+            intent.putExtra( eAge, E_Age.getText().toString() );
+            intent.putExtra( eAddress, E_Address.getText().toString() );
+
+            startActivity(intent);
         } );
     }
     @Override

@@ -11,18 +11,34 @@
         android:layout_margin="10dp">
 
         <TextView
-            android:id="@+id/Name"
+            android:id="@+id/E_Name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="20dp"
             android:text="@string/name"
             android:textSize="15sp"/>
+
+        <TextView
+            android:text="@string/lastname"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/E_Name"
+            android:id="@+id/E_Lastname"
+            />
 
         <TextView
             android:text="@string/address"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/Address"
+            android:layout_below="@+id/E_Lastname"
+            android:id="@+id/E_Address"
+            />
+
+        <TextView
+            android:text="@string/age"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/E_Address"
+            android:id="@+id/E_Age"
             />
 
 
