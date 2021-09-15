@@ -26,18 +26,6 @@ public class SecondActivity extends Activity {
         E_Age = findViewById(R.id.E_Age);
         E_Address = findViewById(R.id.E_Address);
 
-        // Crea una acción para el boton.
-        Button btnInformacion = findViewById(R.id.MoveActivityButton);
-        btnInformacion.setOnClickListener( view -> {
-            Intent intent = new Intent( getBaseContext(), MainActivity.class );
-            intent.putExtra( eName, E_Name.getText().toString() );
-            intent.putExtra( eLastName, E_Lastname.getText().toString() );
-            intent.putExtra( eAge, E_Age.getText().toString() );
-            intent.putExtra( eAddress, E_Address.getText().toString() );
-
-            startActivity(intent);
-        } );
-
         // Extrae la información del intento
         Intent intent = getIntent();
         if (intent == null) return;
@@ -51,6 +39,15 @@ public class SecondActivity extends Activity {
         E_Lastname.setText( lastname );
         E_Age.setText( age );
         E_Address.setText( address );
+
+        // Crea una acción para el boton.
+        intent.putExtra("Informacion", String.format( "%s %s registered.", fullname, lastname ));
+        setResult(RESULT_OK, getIntent() );
+        
+        Button btnInformacion = findViewById(R.id.MoveActivityButton);
+        btnInformacion.setOnClickListener( view -> {
+            finish();
+        } );
     }
 
     @Override

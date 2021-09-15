@@ -11,6 +11,8 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import javax.xml.transform.Result;
+
 public class MainActivity extends Activity {
     public static String eName = "name";
     public static String eLastName = "lastName";
@@ -18,18 +20,17 @@ public class MainActivity extends Activity {
     public static String eAddress = "address";
 
     EditText E_Name, E_Lastname, E_Age, E_Address;
+    TextView ResultText;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
         E_Name = findViewById(R.id.E_Name);
         E_Lastname = findViewById(R.id.E_Lastname);
         E_Age = findViewById(R.id.E_Age);
         E_Address = findViewById(R.id.E_Address);
-
-        ImageView Image = findViewById(R.id.Image);
+        ResultText = findViewById(R.id.Result);
 
         // Crea una acción para el boton.
         Button btnInformacion = findViewById(R.id.MoveActivityButton);
@@ -40,7 +41,7 @@ public class MainActivity extends Activity {
             intent.putExtra( eAge, E_Age.getText().toString() );
             intent.putExtra( eAddress, E_Address.getText().toString() );
 
-            startActivity(intent);
+            startActivityForResult(intent,0);
         } );
 
         // Extrae la información del intento
@@ -82,5 +83,15 @@ public class MainActivity extends Activity {
 
         String address = savedInstanceState.getString("eAddress");
         E_Address.setText(address);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data)
+    {
+        super.onActivityResult(requestCode,resultCode,data);
+        if( requestCode == 0 )
+        {
+            ResultText.setText( data.getStringExtra("Informacion") );
+        }
     }
 }
