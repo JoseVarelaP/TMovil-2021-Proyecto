@@ -20,18 +20,25 @@ import android.provider.MediaStore;
 import android.util.Log;
 import android.util.Size;
 import android.widget.Button;
+import android.widget.GridView;
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 
-import org.jetbrains.annotations.Nullable;
+// import org.jetbrains.annotations.Nullable;
+
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileDescriptor;
 import java.io.IOException;
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 
 public class MainActivity extends Activity {
 
@@ -54,9 +61,9 @@ public class MainActivity extends Activity {
 
         setContentView(R.layout.activity_main);
 
-        this.image = findViewById(R.id.imgCapture);
+        //this.image = findViewById(R.id.imgCapture);
 
-        Button btnOpCam = findViewById(R.id.btnCamera);
+        FloatingActionButton btnOpCam = findViewById(R.id.openCamera);
 
         btnOpCam.setOnClickListener(view -> {
             int permission = checkSelfPermission (Manifest.permission.CAMERA);
@@ -68,12 +75,47 @@ public class MainActivity extends Activity {
             Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
             startActivityForResult(intent, REQUEST_CODE_ACTIVITY);
         });
+
+        // But before we can do that, we need to check that is possible to read the user storage.
+        int permission = checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE);
+        if( permission != PackageManager.PERMISSION_GRANTED )
+            requestPermissions(new String[] { Manifest.permission.READ_EXTERNAL_STORAGE }, REQUEST_CODE_WRITE_STORAGE);
+
         try {
             loadImages();
         } catch (IOException e) {
             e.printStackTrace();
         }
 
+    }
+
+    void loadImageGrid(LinkedList<Long> imgArray) throws IOException {
+        // First obtain the location of the pictures that are available from the user.
+        ArrayList<GridViewItem> Imgs = new ArrayList<>();
+        for( Long path : imgArray )
+        {
+            Bitmap bitmap = getBitmapFromId(path);
+            if (bitmap != null) {
+                Log.i("MY_IMAGES", "YES MEN");
+                //image.setImageBitmap(bitmap);
+                Uri uri = ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, path);
+                Imgs.add( new GridViewItem(uri.getPath(),bitmap) );
+            } else {
+                Log.i("MY_IMAGES", "NO MEN");
+            }
+        }
+
+        // Ok, now we have the array of Bitmaps to store, now we need to place them on the grid.
+        setGridAdapter( Imgs );
+    }
+
+    void setGridAdapter(ArrayList<GridViewItem> gridItems)
+    {
+        // Create the adapter that will be used on the grid.
+        GridAdapter adapter = new GridAdapter(this, gridItems);
+        // Set the grid adapter.
+        GridView gridView = (GridView) findViewById(R.id.ImageListing);
+        gridView.setAdapter(adapter);
     }
 
     @Override
@@ -83,7 +125,7 @@ public class MainActivity extends Activity {
         if (requestCode == REQUEST_CODE_ACTIVITY && resultCode == RESULT_OK) {
             Bundle ext = data.getExtras();
             Bitmap imageBitMap = (Bitmap) ext.get("data");
-            image.setImageBitmap(imageBitMap);
+            //image.setImageBitmap(imageBitMap);
         }
     }
 
@@ -91,12 +133,14 @@ public class MainActivity extends Activity {
     protected void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
 
+        /*
         if (image.getDrawable() == null){
             return;
         }
         byte [] byteArray = convertImage2ByteArray(image);
 
         outState.putByteArray(IMAGE, byteArray);
+        */
     }
 
     @Override
@@ -105,7 +149,7 @@ public class MainActivity extends Activity {
 
         byte [] byteArray = savedInstanceState.getByteArray (IMAGE);
         Bitmap bitmap = BitmapFactory.decodeByteArray (byteArray, 0, byteArray.length);
-        image.setImageBitmap (bitmap);
+        //image.setImageBitmap (bitmap);
     }
 
     private byte [] convertImage2ByteArray (ImageView imageView) {
@@ -190,10 +234,11 @@ public class MainActivity extends Activity {
         LinkedList<Long> ids = getIds();
         if (ids == null)
             return;
+        loadImageGrid( ids );
         Bitmap bitmap = getBitmapFromId(ids.getFirst());
         if (bitmap != null) {
             Log.i("MY_IMAGES", "YES MEN");
-            image.setImageBitmap(bitmap);
+            //image.setImageBitmap(bitmap);
         } else {
             Log.i("MY_IMAGES", "NO MEN");
         }
