@@ -14,7 +14,11 @@ import android.graphics.Canvas;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
+
 import androidx.exifinterface.media.ExifInterface;
+
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.media.ThumbnailUtils;
 import android.net.Uri;
 import android.os.Build;
@@ -23,6 +27,8 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.util.Size;
+import android.view.View;
+import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -55,6 +61,8 @@ public class MainActivity extends Activity {
     public static final int REQUEST_CODE_WRITE_STORAGE = 100;
     public static final int REQUEST_CODE_LOCATION = 200;
     public static final String IMAGE = "image";
+    private static final float LOCATION_REFRESH_DISTANCE = 10;
+    private static final long LOCATION_REFRESH_TIME = 2;
     private File fileImage;
     private MyOnSuccessListener myClass;
 
@@ -295,13 +303,27 @@ public class MainActivity extends Activity {
 
     static final int REQUEST_TAKE_PHOTO = 1;
 
+    public LocationListener mLocationListener = location -> {
+        Log.d("LocationListener","Pos changed.");
+        Log.d("LocationListener",Double.toString(location.getLatitude()));
+    };
+
     @SuppressLint("QueryPermissionsNeeded")
     private void dispatchTakePictureIntent() {
+        Log.d("dispatchTakePictureInt", "Starting...");
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         // Ensure that there's a camera activity to handle the intent
         if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+            Log.d("dispatchTakePictureInt", "Camera Activity Intent available.");
             // Create the File where the photo should go
             // File photoFile = null;
+            LocationManager mLocationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                // Stop if no permission is given.
+                return;
+            }
+            mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, LOCATION_REFRESH_TIME,
+                    LOCATION_REFRESH_DISTANCE, mLocationListener);
             fileImage = null;
             try {
                 fileImage = createImageFile();
