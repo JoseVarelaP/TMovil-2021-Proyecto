@@ -25,6 +25,7 @@ import android.util.Log;
 import android.util.Size;
 import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -111,9 +112,14 @@ public class MainActivity extends Activity {
 
     }
 
-    void loadImageGrid(LinkedList<Long> imgArray) throws IOException {
-        // First obtain the location of the pictures that are available from the user.
+    ArrayList<GridViewItem> loadImageGridData(LinkedList<Long> imgArray) throws IOException {
         ArrayList<GridViewItem> Imgs = new ArrayList<>();
+        // Check if the list we obtained has any kind of content.
+        if (imgArray.isEmpty()) {
+            return Imgs;
+        }
+
+        // First obtain the location of the pictures that are available from the user.
         for (Long path : imgArray) {
             Bitmap bitmap = getBitmapFromId(path);
             if (bitmap != null) {
@@ -126,8 +132,7 @@ public class MainActivity extends Activity {
             }
         }
 
-        // Ok, now we have the array of Bitmaps to store, now we need to place them on the grid.
-        setGridAdapter(Imgs);
+        return Imgs;
     }
 
     void setGridAdapter(ArrayList<GridViewItem> gridItems) {
@@ -169,23 +174,14 @@ public class MainActivity extends Activity {
     @Override
     protected void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-
-        /*
-        if (image.getDrawable() == null){
-            return;
-        }
-        byte [] byteArray = convertImage2ByteArray(image);
-
-        outState.putByteArray(IMAGE, byteArray);
-        */
     }
 
     @Override
     protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
 
-        byte[] byteArray = savedInstanceState.getByteArray(IMAGE);
-        Bitmap bitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
+        //byte[] byteArray = savedInstanceState.getByteArray(IMAGE);
+        //Bitmap bitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
         //image.setImageBitmap (bitmap);
     }
 
@@ -213,8 +209,6 @@ public class MainActivity extends Activity {
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     private void permission() {
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
-//            return;
         int permission = checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE);
         if (permission != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
@@ -228,13 +222,14 @@ public class MainActivity extends Activity {
         if (ids == null)
             return;
 
-        loadImageGrid(ids);
-        Bitmap bitmap = getBitmapFromId(ids.getFirst());
-        if (bitmap != null) {
-            Log.i("MY_IMAGES", "YES MEN");
-            //image.setImageBitmap(bitmap);
+        ArrayList<GridViewItem> imageItems = loadImageGridData(ids);
+        if (!imageItems.isEmpty()) {
+            // Ok, now we have the array of Bitmaps to store, now we need to place them on the grid.
+            setGridAdapter(imageItems);
         } else {
-            Log.i("MY_IMAGES", "NO MEN");
+            // We've got no photos, inform the user about it.
+            TextView noPhoto = findViewById(R.id.noPhoto);
+            noPhoto.setVisibility(View.VISIBLE);
         }
     }
 

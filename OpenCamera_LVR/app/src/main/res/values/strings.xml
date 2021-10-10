@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">OpenCamera_LVR</string>
     <string name="btn_camera">Open Camera</string>
+    <string name="no_photos">No Photos Available</string>
 </resources>

@@ -14,6 +14,15 @@
         android:horizontalSpacing="10dp"
         android:numColumns="auto_fit"/>
 
+    <TextView
+        android:id="@+id/noPhoto"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:text="@string/no_photos"
+        android:gravity="center"
+        android:visibility="invisible"
+        />
+
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/openCamera"
         android:layout_width="wrap_content"
