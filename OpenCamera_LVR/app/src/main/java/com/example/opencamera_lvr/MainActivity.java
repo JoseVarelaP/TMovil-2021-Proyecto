@@ -163,6 +163,12 @@ public class MainActivity extends Activity {
                 exifInterface.setAttribute(ExifInterface.TAG_GPS_LATITUDE,String.valueOf(location.getLongitude()));
                 exifInterface.saveAttributes();
                 Toast.makeText(getBaseContext(), "Image Saved Successfully", Toast.LENGTH_LONG).show();
+                // Reload the list to show the new images with the others.
+                try {
+                    loadImages();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             } catch (IOException | NullPointerException e) {
                 Toast.makeText(getBaseContext(), "Location Failed", Toast.LENGTH_LONG).show();
             }
