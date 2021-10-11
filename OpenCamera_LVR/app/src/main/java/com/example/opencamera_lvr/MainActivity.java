@@ -159,9 +159,15 @@ public class MainActivity extends Activity {
             try {
                 ExifInterface exifInterface = new ExifInterface(fileImage);
                 Location location = myClass.getLocation();
-                exifInterface.setAttribute(ExifInterface.TAG_GPS_LATITUDE,String.valueOf(location.getLatitude()));
-                exifInterface.setAttribute(ExifInterface.TAG_GPS_LATITUDE,String.valueOf(location.getLongitude()));
+                exifInterface.setAttribute(ExifInterface.TAG_GPS_LATITUDE_REF,String.valueOf(location.getLatitude()));
+                exifInterface.setAttribute(ExifInterface.TAG_GPS_LONGITUDE_REF,String.valueOf(location.getLongitude()));
                 exifInterface.saveAttributes();
+
+                //Nos sirve para comprobar que, efectivamente, los datos fueron agregados en la imagen
+                Log.d("Latitud: ", exifInterface.getAttribute(ExifInterface.TAG_GPS_LATITUDE_REF));
+                Log.d("Longitud: ", exifInterface.getAttribute(ExifInterface.TAG_GPS_LONGITUDE_REF));
+
+
                 Toast.makeText(getBaseContext(), "Image Saved Successfully", Toast.LENGTH_LONG).show();
                 // Reload the list to show the new images with the others.
                 try {
