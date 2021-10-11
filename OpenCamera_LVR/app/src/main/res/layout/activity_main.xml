@@ -22,6 +22,14 @@
         android:gravity="center"
         android:visibility="invisible"
         />
+    <TextView
+        android:id="@+id/loadPhoto"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:text="@string/loading_photos"
+        android:gravity="center"
+        android:visibility="invisible"
+        />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/openCamera"

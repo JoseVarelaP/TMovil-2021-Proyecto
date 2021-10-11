@@ -3,35 +3,22 @@ package com.example.opencamera_lvr;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.location.Location;
 
 import androidx.exifinterface.media.ExifInterface;
 
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.media.ThumbnailUtils;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
-import android.util.Size;
-import android.view.View;
-import android.widget.Button;
-import android.widget.GridView;
-import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -47,11 +34,9 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedList;
 
@@ -60,19 +45,37 @@ public class MainActivity extends Activity {
     public static final int REQUEST_CODE_CAMERA = 1001;
     public static final int REQUEST_CODE_WRITE_STORAGE = 100;
     public static final int REQUEST_CODE_LOCATION = 200;
-    public static final String IMAGE = "image";
     private static final float LOCATION_REFRESH_DISTANCE = 10;
     private static final long LOCATION_REFRESH_TIME = 2;
     private File fileImage;
+    private MyThread myThread;
     private MyOnSuccessListener myClass;
 
-    ImageView image;
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void onResume() {
         super.onResume();
+        Log.i("TEST_MY", "OnResume");
         activeSuccessListener();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Log.i("TEST_MY", "OnDestroy");
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Log.i("TEST_MY", "OnPause");
+//        if (myThread != null) {
+//            if (myThread.isAlive()) {
+//                Log.i("TEST_MY", "OnPause2");
+//                // myThread.interrupt();
+//            } else myThread = null;
+//        }
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)
@@ -93,7 +96,7 @@ public class MainActivity extends Activity {
         };
 
         for (String str : permissions) {
-            if (this.checkSelfPermission(str) != PackageManager.PERMISSION_GRANTED) {
+            while (this.checkSelfPermission(str) != PackageManager.PERMISSION_GRANTED) {
                 this.requestPermissions(permissions, REQUEST_CODE_WRITE_STORAGE);
             }
         }
@@ -120,36 +123,24 @@ public class MainActivity extends Activity {
 
     }
 
-    ArrayList<GridViewItem> loadImageGridData(LinkedList<Long> imgArray) throws IOException {
-        ArrayList<GridViewItem> Imgs = new ArrayList<>();
-        // Check if the list we obtained has any kind of content.
-        if (imgArray.isEmpty()) {
-            return Imgs;
-        }
-
-        // First obtain the location of the pictures that are available from the user.
-        for (Long path : imgArray) {
-            Bitmap bitmap = getBitmapFromId(path);
-            if (bitmap != null) {
-                Log.i("MY_IMAGES", "YES MEN");
-                //image.setImageBitmap(bitmap);
-                Uri uri = ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, path);
-                Imgs.add(new GridViewItem(uri.getPath(), bitmap));
-            } else {
-                Log.i("MY_IMAGES", "NO MEN");
-            }
-        }
-
-        return Imgs;
-    }
-
-    void setGridAdapter(ArrayList<GridViewItem> gridItems) {
-        // Create the adapter that will be used on the grid.
-        GridAdapter adapter = new GridAdapter(this, gridItems);
-        // Set the grid adapter.
-        GridView gridView = (GridView) findViewById(R.id.ImageListing);
-        gridView.setAdapter(adapter);
-    }
+//    @Override
+//    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+//        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+//
+//        if (requestCode == REQUEST_CODE_WRITE_STORAGE) {
+//            try {
+//                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+//                    try {
+//                        loadImages();
+//                    } catch (IOException e) {
+//                        e.printStackTrace();
+//                    }
+//                }
+//            } catch (ArrayIndexOutOfBoundsException exception) {
+//                exception.printStackTrace();
+//            }
+//        }
+//    }
 
     @RequiresApi(api = Build.VERSION_CODES.Q)
     @Override
@@ -179,66 +170,14 @@ public class MainActivity extends Activity {
         }
     }
 
-    @Override
-    protected void onSaveInstanceState(@NonNull Bundle outState) {
-        super.onSaveInstanceState(outState);
-    }
-
-    @Override
-    protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
-        super.onRestoreInstanceState(savedInstanceState);
-
-        //byte[] byteArray = savedInstanceState.getByteArray(IMAGE);
-        //Bitmap bitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
-        //image.setImageBitmap (bitmap);
-    }
-
-    private byte[] convertImage2ByteArray(ImageView imageView) {
-        Drawable drawable = imageView.getDrawable();
-        Bitmap bitmap = getBitmapFromDrawable(drawable);
-        ByteArrayOutputStream byteAOut = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteAOut);
-
-        return byteAOut.toByteArray();
-    }
-
-    private Bitmap getBitmapFromDrawable(Drawable drawable) {
-        if (drawable instanceof BitmapDrawable) {
-            return ((BitmapDrawable) drawable).getBitmap();
-        }
-
-        Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
-        Canvas canvas = new Canvas(bitmap);
-        drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
-        drawable.draw(canvas);
-
-        return bitmap;
-    }
-
-    @RequiresApi(api = Build.VERSION_CODES.M)
-    private void permission() {
-        int permission = checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE);
-        if (permission != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                    REQUEST_CODE_WRITE_STORAGE);
-        }
-    }
-
     private void loadImages() throws IOException {
 
         LinkedList<Long> ids = getIds();
         if (ids == null)
             return;
 
-        ArrayList<GridViewItem> imageItems = loadImageGridData(ids);
-        if (!imageItems.isEmpty()) {
-            // Ok, now we have the array of Bitmaps to store, now we need to place them on the grid.
-            setGridAdapter(imageItems);
-        } else {
-            // We've got no photos, inform the user about it.
-            TextView noPhoto = findViewById(R.id.noPhoto);
-            noPhoto.setVisibility(View.VISIBLE);
-        }
+        myThread = new MyThread(this, ids);
+        myThread.start();
     }
 
 
@@ -269,18 +208,6 @@ public class MainActivity extends Activity {
     }
 
 
-    private Bitmap getBitmapFromId(long imageId) throws IOException {
-        Uri uri = ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, imageId);
-        Bitmap bitmap;
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
-            bitmap = this.getContentResolver().loadThumbnail(uri, new Size(100, 100), null);
-        } else {
-            Bitmap bitmap_aux = MediaStore.Images.Media.getBitmap(this.getContentResolver(), uri);
-            bitmap = ThumbnailUtils.extractThumbnail(bitmap_aux, 100, 100);
-        }
-        return bitmap;
-    }
-
     String currentPhotoPath;
 
     private File createImageFile() throws IOException {
@@ -288,8 +215,6 @@ public class MainActivity extends Activity {
         @SuppressLint("SimpleDateFormat") String timeStamp = new SimpleDateFormat("yyyyMMdd_HH-mm-ss").format(new Date());
         String imageFileName = "JPEG_" + timeStamp + "_";
         File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-        File alt = new  File(Environment.getExternalStorageDirectory(), "DCIM/Camera");
-        Log.i("MY_IMAGES",alt.getAbsolutePath());
         File image = File.createTempFile(
                 imageFileName,  /* prefix */
                 ".jpg",         /* suffix */
@@ -308,6 +233,7 @@ public class MainActivity extends Activity {
         Log.d("LocationListener",Double.toString(location.getLatitude()));
     };
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     @SuppressLint("QueryPermissionsNeeded")
     private void dispatchTakePictureIntent() {
         Log.d("dispatchTakePictureInt", "Starting...");
@@ -319,6 +245,8 @@ public class MainActivity extends Activity {
             // File photoFile = null;
             LocationManager mLocationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                requestPermissions(new String [] {Manifest.permission.ACCESS_FINE_LOCATION,
+                        Manifest.permission.ACCESS_COARSE_LOCATION}, REQUEST_CODE_LOCATION);
                 // Stop if no permission is given.
                 return;
             }
